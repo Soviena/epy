@@ -53,6 +53,7 @@ import uuid
 import xml.etree.ElementTree as ET
 import zipfile
 import time
+import requests
 
 from typing import Optional, Union, Sequence, Tuple, List, Dict, Mapping, Set, Type, Any
 from dataclasses import dataclass, field
@@ -3885,6 +3886,19 @@ def preread(stdscr, filepath: str):
         sys.exit(msg)
     signal.signal(signal.SIGTERM, handle_signal)
 
+    def searchMangaImg(title):
+        query = """
+        query($title : String){
+            Media(search: $title, type:MANGA){
+                coverImage{
+                    large
+                }
+            }
+        }
+        """
+        variable = {'title' : title}
+        return requests.post("https://graphql.anilist.co", json={'query': query, 'variables': variable})
+
     try:
         reader.run_counting_letters()
 
@@ -3895,10 +3909,9 @@ def preread(stdscr, filepath: str):
             reading_state = dataclasses.replace(reading_state, rel_pctg=None)
 
         if dcrpc:
-            import anilist
             title = ebook.get_meta().title
             try:
-                imgdata = eval(anilist.searchMangaImg(re.search(r'(.*)Vol',title).group(1)).content)
+                imgdata = eval(searchMangaImg(re.search(r'(.*)Vol',title).group(1)).content)
                 img = imgdata['data']['Media']['coverImage']['large'].replace('\\','')
                 RPC.update(state=title, details="Reading a book", start=time.time(),large_image=img)
             except:
