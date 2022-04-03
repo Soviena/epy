@@ -52,6 +52,7 @@ import textwrap
 import uuid
 import xml.etree.ElementTree as ET
 import zipfile
+import time
 
 from typing import Optional, Union, Sequence, Tuple, List, Dict, Mapping, Set, Type, Any
 from dataclasses import dataclass, field
@@ -65,6 +66,17 @@ from pathlib import PurePosixPath
 from urllib.error import HTTPError, URLError
 from urllib.parse import unquote, urljoin, urlparse
 from urllib.request import Request, urlopen
+from pypresence import Presence
+
+dcrpc = False;
+try:
+    client_id = "960153351817936896"  
+    RPC = Presence(client_id=client_id)
+    RPC.connect()
+    dcrpc = True
+except:
+    pass
+    # print("Can't Connect to discord")
 
 try:
     from epy_extras import unpackBook  # type: ignore
@@ -3881,6 +3893,17 @@ def preread(stdscr, filepath: str):
             reading_state = dataclasses.replace(reading_state, textwidth=reader.screen_cols - 4)
         else:
             reading_state = dataclasses.replace(reading_state, rel_pctg=None)
+
+        if dcrpc:
+            import anilist
+            title = ebook.get_meta().title
+            try:
+                imgdata = eval(anilist.searchMangaImg(re.search(r'(.*)Vol',title).group(1)).content)
+                img = imgdata['data']['Media']['coverImage']['large'].replace('\\','')
+                RPC.update(state=title, details="Reading a book", start=time.time(),large_image=img)
+            except:
+                RPC.update(state=title, details="Reading a book", start=time.time())
+                
 
         while True:
             reading_state_or_ebook = reader.read(reading_state)

@@ -6,21 +6,9 @@
 
 CLI Ebook Reader.
 
-This is just a fork of [epr](https://github.com/wustho/epr) with these extra features:
+This is a fork of [epy](https://github.com/wustho/epy) with these extra features:
 
-- Supported formats:
-  - Epub (.epub, .epub3)
-  - FictionBook (.fb2)
-  - Mobi (.mobi)
-  - AZW3 (.azw, .azw3)
-  - [URL](#url-support)
-- Reading progress percentage
-- Bookmarks
-- External dictionary integration (`sdcv`, `dict` or `wkdict`)
-- Inline formats: **bold** and _italic_ (depend on terminal and font capability. Italic only supported in python>=3.7)
-- Text-to-Speech (with additional setup, read [below](#text-to-speech))
-- [Double Spread](#double-spread)
-- Seamless (disabled by default, read [below](#reading-tips-using-epy))
+- Discord Rich Presence using pypresence
 
 ## Installation
 
